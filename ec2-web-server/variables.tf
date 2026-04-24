@@ -15,4 +15,9 @@ variable "ami_id" {
   type        = string
   default     = "ami-098e39bafa7e7303d" # Valid for us-east-1
 }
+variable "root_volume_size" {
+  description = "The size of the root volume in GB"
+  type        = number
+  default     = 50
+}
 
