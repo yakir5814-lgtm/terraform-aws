@@ -16,7 +16,3 @@ variable "ami_id" {
   default     = "ami-098e39bafa7e7303d" # Valid for us-east-1
 }
 
-variable "key_name" {
-  description = "The name of the AWS key pair"
-  type        = string
-}
