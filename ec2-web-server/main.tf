@@ -85,14 +85,14 @@ resource "aws_instance" "ubuntu_server" {
               #!/bin/bash
               # 1. Update and install Docker
               dnf update -y
-              dnf install docker -y
+              dnf install docker git -y  
               systemctl start docker
               systemctl enable docker
               usermod -aG docker ec2-user
 
               # 2. Install Terraform
               dnf install -y yum-utils
-              yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+              yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
               dnf install terraform -y
 
               # 3. Install kubectl
@@ -101,8 +101,10 @@ resource "aws_instance" "ubuntu_server" {
 
               # 4. Install Minikube
               curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
-              rpm -ivh minikube-latest.x86_64.rpm
-              EOF
+              dnf install -y ./minikube-latest.x86_64.rpm
 
-  tags = { Name = "Terraform-DevOps-Server" }
-}
+              # 5. Optional: Better CLI experience
+              echo 'alias k=kubectl' >> /home/ec2-user/.bashrc
+              echo 'complete -F __start_kubectl k' >> /home/ec2-user/.bashrc
+              kubectl completion bash > /etc/bash_completion.d/kubectl
+              EOF
