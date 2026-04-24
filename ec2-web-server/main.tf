@@ -73,3 +73,36 @@ resource "aws_instance" "ubuntu_server" {
 
   tags = { Name = "Ubuntu-Public-Server" }
 }
+resource "aws_instance" "ubuntu_server" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  subnet_id              = aws_subnet.public_subnet.id
+  vpc_security_group_ids = [aws_security_group.web_access.id]
+  key_name               = "Yakir01" # המפתח שראינו בהגדרות שלך
+
+  # instals
+  user_data = <<-EOF
+              #!/bin/bash
+              # 1. Update and install Docker
+              dnf update -y
+              dnf install docker -y
+              systemctl start docker
+              systemctl enable docker
+              usermod -aG docker ec2-user
+
+              # 2. Install Terraform
+              dnf install -y yum-utils
+              yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+              dnf install terraform -y
+
+              # 3. Install kubectl
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+              # 4. Install Minikube
+              curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
+              rpm -ivh minikube-latest.x86_64.rpm
+              EOF
+
+  tags = { Name = "Terraform-DevOps-Server" }
+}
