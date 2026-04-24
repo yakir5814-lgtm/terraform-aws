@@ -2,7 +2,7 @@
 resource "aws_vpc" "main_vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
-  tags = { Name = "task2-vpc" }
+  tags = { Name = "Server01" }
 }
 
 # 2. Create a Public Subnet
@@ -17,7 +17,7 @@ resource "aws_subnet" "public_subnet" {
 # 3. Create an Internet Gateway (To allow internet access)
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main_vpc.id
-  tags   = { Name = "task2-igw" }
+  tags   = { Name = "Server01-igw" }
 }
 
 # 4. Create a Route Table
