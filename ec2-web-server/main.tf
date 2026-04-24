@@ -71,6 +71,10 @@ resource "aws_instance" "ubuntu_server" {
   vpc_security_group_ids = [aws_security_group.web_access.id]
   key_name               =  ""  
 
+root_block_device {
+    volume_size = 50    
+    volume_type = "gp3"
+  }
   tags = { Name = "Ubuntu-DevOps-Server" }
 
   user_data = <<-EOF
