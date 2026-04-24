@@ -2,7 +2,7 @@
 resource "aws_vpc" "main_vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
-  tags = { Name = "Server01" }
+  tags = { Name = "Server01-VPC" }
 }
 
 # 2. Create a Public Subnet
@@ -14,7 +14,7 @@ resource "aws_subnet" "public_subnet" {
   tags = { Name = "task2-public-subnet" }
 }
 
-# 3. Create an Internet Gateway (To allow internet access)
+# 3. Create an Internet Gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main_vpc.id
   tags   = { Name = "Server01-igw" }
@@ -36,10 +36,10 @@ resource "aws_route_table_association" "public_assoc" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-# 6. Security Group (Updated to use our new VPC)
+# 6. Security Group
 resource "aws_security_group" "web_access" {
-  name        = "allow_ssh_http"
-  vpc_id      = aws_vpc.main_vpc.id
+  name   = "allow_ssh_http"
+  vpc_id = aws_vpc.main_vpc.id
 
   ingress {
     from_port   = 22
@@ -63,29 +63,21 @@ resource "aws_security_group" "web_access" {
   }
 }
 
-# 7. EC2 Instance (Updated to use our new Subnet)
+# 7. EC2 Instance
 resource "aws_instance" "ubuntu_server" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.web_access.id]
-  # key_name               = ""  
+  key_name               = var.key_name  # שימוש במשתנה במקום ערך קשיח
 
-  tags = { Name = "Ubuntu-Public-Server" }
-}
-resource "aws_instance" "ubuntu_server" {
-  ami                    = var.ami_id
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.public_subnet.id
-  vpc_security_group_ids = [aws_security_group.web_access.id]
-  key_name               = ""
+  tags = { Name = "Ubuntu-DevOps-Server" }
 
-  # instals
   user_data = <<-EOF
               #!/bin/bash
               # 1. Update and install Docker
               dnf update -y
-              dnf install docker git -y  
+              dnf install docker git -y
               systemctl start docker
               systemctl enable docker
               usermod -aG docker ec2-user
@@ -103,8 +95,8 @@ resource "aws_instance" "ubuntu_server" {
               curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
               dnf install -y ./minikube-latest.x86_64.rpm
 
-              # 5. Optional: Better CLI experience
+              # 5. CLI Optimizations
               echo 'alias k=kubectl' >> /home/ec2-user/.bashrc
               echo 'complete -F __start_kubectl k' >> /home/ec2-user/.bashrc
-              kubectl completion bash > /etc/bash_completion.d/kubectl
               EOF
+}
