@@ -7,11 +7,11 @@ variable "aws_region" {
 variable "instance_type" {
   description = "The type of instance to start"
   type        = string
-  default     = "t3.micro"
+  default     = "t3.medium"
 }
 
 variable "ami_id" {
-  description = "The AMI ID for Ubuntu 22.04"
+  description = "The AMI ID for Amazon Linux 2023"
   type        = string
-  default     = "ami-0c7217cdde317cfec" # Valid for us-east-1
+  default     = "ami-098e39bafa7e7303d" # Valid for us-east-1
 }
