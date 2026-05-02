@@ -1,0 +1,10 @@
+replicaCount: 2
+
+image:
+  repository: gcr.io/google-samples/node-hello
+  tag: "1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
