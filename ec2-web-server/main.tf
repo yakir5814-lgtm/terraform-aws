@@ -69,7 +69,7 @@ resource "aws_instance" "ubuntu_server" {
   instance_type          = var.instance_type
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.web_access.id]
-  key_name               =  "Yakir01"  
+  key_name               =  ""  
 
 root_block_device {
     volume_size = 50    
